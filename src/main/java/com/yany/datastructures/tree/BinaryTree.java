@@ -123,8 +123,6 @@ public class BinaryTree {
                 subTree = subTree.getRightChild();
             }
         }
-
-
     }
 
     public void noRecPostOrder(TreeNode subTree) {
@@ -134,10 +132,8 @@ public class BinaryTree {
 
         while (subTree != null) {
             //左子树入栈
-            while (subTree != null) {
+            for (; subTree.getLeftChild() != null; subTree = subTree.getLeftChild())
                 stack.push(subTree);
-                subTree = subTree.getLeftChild();
-            }
             //当前结点无右子树或右子树已经输出
             while (subTree != null && (subTree.getRightChild() == null || subTree.getRightChild() == tmp)) {
                 visted(subTree);
@@ -152,6 +148,7 @@ public class BinaryTree {
         }
 
     }
+
 
 
     public void visted(TreeNode subTree) {
@@ -179,6 +176,7 @@ public class BinaryTree {
 
         System.out.println("***非递归实现****(后序遍历)[DEBFCA]遍历*****************");
         binaryTree.noRecPostOrder(binaryTree.root);
+
 
 
     }
