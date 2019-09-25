@@ -10,7 +10,8 @@ public class BinarySearch {
     public static void main(String[] args) {
         int[] src = new int[]{1, 3, 5, 7, 8, 9};
         System.out.println(binarySearch(src, 3));
-        System.out.println(binarySearch(src, 11, 0, src.length - 1));
+//        System.out.println(binarySearch(src, 4, 0, src.length - 1));
+
     }
 
     /**
@@ -25,9 +26,9 @@ public class BinarySearch {
             if (des == srcArray[middle]) {
                 return middle;
             } else if (des > srcArray[middle]) {
-                low = middle;
+                low = middle + 1;
             } else if (des < srcArray[middle]) {
-                high = middle;
+                high = middle - 1;
             }
         }
         return -1;
@@ -54,7 +55,7 @@ public class BinarySearch {
         } else {
             return middle;
         }
-
     }
+
 
 }

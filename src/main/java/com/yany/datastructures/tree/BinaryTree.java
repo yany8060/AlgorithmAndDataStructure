@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSON;
 import java.util.Stack;
 
 /**
+ * 二叉树
  * Created by yanyong on 2016/12/14.
  */
 public class BinaryTree {
@@ -132,8 +133,9 @@ public class BinaryTree {
 
         while (subTree != null) {
             //左子树入栈
-            for (; subTree.getLeftChild() != null; subTree = subTree.getLeftChild())
+            for (; subTree.getLeftChild() != null; subTree = subTree.getLeftChild()) {
                 stack.push(subTree);
+            }
             //当前结点无右子树或右子树已经输出
             while (subTree != null && (subTree.getRightChild() == null || subTree.getRightChild() == tmp)) {
                 visted(subTree);
@@ -150,10 +152,30 @@ public class BinaryTree {
     }
 
 
-
     public void visted(TreeNode subTree) {
         System.out.println("--name:" + subTree.getData());
     }
+
+    /**
+     * 插入节点
+     *
+     * @param node
+     * @param root
+     * @return
+     */
+    public TreeNode addNode(TreeNode node, TreeNode root) {
+        if (root == null) {
+            root = node;
+        } else if (node.getKey() < root.getKey()) {
+            addNode(node, root.getLeftChild());
+        }
+
+        if (node.getKey() >= root.getKey()) {
+            addNode(node, root.getRightChild());
+        }
+        return root;
+    }
+
 
     public static void main(String[] args) {
         BinaryTree binaryTree = new BinaryTree();
@@ -176,7 +198,6 @@ public class BinaryTree {
 
         System.out.println("***非递归实现****(后序遍历)[DEBFCA]遍历*****************");
         binaryTree.noRecPostOrder(binaryTree.root);
-
 
 
     }
