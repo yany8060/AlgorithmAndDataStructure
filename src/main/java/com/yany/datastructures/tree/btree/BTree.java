@@ -25,12 +25,28 @@ public class BTree<K extends Comparable<K>> {
         AbstractBTreeNode<K> n = root;
         if (root.isFull()) {
             AbstractBTreeNode<K> newRoot = new BTreeInternalNode<>(degree);
-
-
+            newRoot.insertChild(n, 0);
+            newRoot.splitChild(0);
+            n = newRoot;
+            root = newRoot;
         }
         n.insertNotFull(key);
-
     }
 
 
+    public void delete(K key) {
+        AbstractBTreeNode<K> node = root;
+        node.deleteNotEmpty(key);
+        if (node.nkey() == 0) {
+            root = node.getChild(0);
+            if (root == null) {
+                root = new BTreeLeaf<K>(degree);
+            }
+        }
+    }
+
+    @Override
+    public String toString() {
+        return AbstractBTreeNode.BTreeToString(this.root);
+    }
 }

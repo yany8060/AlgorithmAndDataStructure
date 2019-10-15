@@ -1,19 +1,25 @@
 package com.yany.datastructures.tree.btree;
 
-import java.util.Arrays;
-
 /**
  * @author yanyong on 2019/9/25
  */
 public class BTreeInternalNode<K extends Comparable<K>> extends AbstractBTreeNode<K> {
 
-    // 内部节点
+    /**
+     * 内部节点
+     */
     private final Object[] keys;
-    // 叶子节点
+    /**
+     * 内部节点
+     */
     private final AbstractBTreeNode<K>[] children;
-    // 内部节点数
+    /**
+     * 内部节点数
+     */
     private int nkey = 0;
-    // 叶子节点数
+    /**
+     * 叶子节点数
+     */
     private int nchild = 0;
 
 
@@ -138,23 +144,58 @@ public class BTreeInternalNode<K extends Comparable<K>> extends AbstractBTreeNod
                 if (key.compareTo((K) keys[i]) < 0) {
                     break;
                 }
+                i++;
             }
             AbstractBTreeNode<K> target = children[i];
+            // 孩子节点有足够的key 直接删除
             if (target.nkey() >= degree) {
                 target.deleteNotEmpty(key);
             } else {
                 //try to find replacement from predecessor
                 AbstractBTreeNode<K> sibling;
+
                 if (i > 0 && (sibling = children[i - 1]).nkey() >= degree) {
                     if (!target.isLeaf()) {
                         AbstractBTreeNode<K> sub = sibling.deleteChild(nchild);
                         target.insertChild(sub, 0);
                     }
+                    // 从左边兄弟节点借一个key
                     K repKey = sibling.deleteKey(sibling.nkey() - 1);
                     repKey = setKey(repKey, i - 1);
                     target.insertKey(repKey);
+
+
+                    // 上面的操作使得 节点 >= degree 从而能够删除
                     target.deleteNotEmpty(key);
                 } else if (i < nkey && (sibling = children[i + 1]).nkey() >= degree) {
+                    if (!target.isLeaf()) {
+                        AbstractBTreeNode<K> sub = sibling.deleteChild(nchild);
+                        target.insertChild(sub, target.nchild());
+                    }
+                    // 从右边兄弟节点借一个key
+                    K repKey = sibling.deleteKey(0);
+                    repKey = setKey(repKey, i + 1);
+                    target.insertKey(repKey);
+
+                    // 上面的操作使得 节点 >= degree 从而能够删除
+                    target.deleteNotEmpty(key);
+                } else {
+                    // 左右两边兄弟节点不够 则进行合并
+                    if (i > 0) {
+                        K repKey = this.deleteKey(i - 1);
+                        sibling = children[i - 1];
+                        sibling.merge(repKey, target);
+                        this.deleteChild(target);
+
+                        sibling.deleteNotEmpty(key);
+                    } else {
+                        K repKey = this.deleteKey(i);
+                        sibling = children[i + 1];
+                        target.merge(repKey, sibling);
+                        deleteChild(i + 1);
+
+                        target.deleteNotEmpty(key);
+                    }
 
                 }
 
@@ -165,8 +206,48 @@ public class BTreeInternalNode<K extends Comparable<K>> extends AbstractBTreeNod
 
     @Override
     protected void splitChild(int child) {
+        AbstractBTreeNode<K> old = children[child];
+        AbstractBTreeNode<K> neo = old.isLeaf() ? new BTreeLeaf<>(degree) : new BTreeInternalNode<>(degree);
 
+        K middle = old.splitSelf(neo);
+        this.insertKey(middle);
+        this.insertChild(neo, child + 1);
+    }
 
+    @Override
+    protected K splitSelf(AbstractBTreeNode<K> newNode) {
+        if (!(newNode instanceof BTreeInternalNode)) {
+            throw new RuntimeException("Instance not match.");
+        }
+        if (!isFull()) {
+            throw new RuntimeException("Node is not ful");
+        }
+
+        // 需要上升的key
+        K middle = (K) keys[degree - 1];
+
+        // 分裂的新节点
+        BTreeInternalNode<K> node = (BTreeInternalNode) newNode;
+        int i = 0;
+        while (i < degree - 1) {
+            node.keys[i] = this.keys[i + degree];
+            this.keys[i + degree] = null;
+            i++;
+        }
+        this.keys[degree - 1] = null;
+
+        i = 0;
+        while (i < degree) {
+            node.children[i] = this.children[i + degree];
+            this.children[i + degree] = null;
+            i++;
+        }
+
+        this.nkey = degree - 1;
+        node.nkey = degree - 1;
+        this.nchild = degree;
+        node.nchild = degree;
+        return middle;
     }
 
     @Override
@@ -183,7 +264,20 @@ public class BTreeInternalNode<K extends Comparable<K>> extends AbstractBTreeNod
         for (int i = 0; i < node.nchild(); i++) {
             insertChild(node.children[i], i + degree);
         }
+    }
 
-
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(" internal node ---- ")
+                .append("size: ")
+                .append(nkey)
+                .append("keys:")
+                .append("[");
+        for (int i = 0; i < nkey; i++) {
+            sb.append(keys[i]).append(",");
+        }
+        sb.append("]");
+        return sb.toString();
     }
 }
