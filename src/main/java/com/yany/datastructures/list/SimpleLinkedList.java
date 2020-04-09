@@ -4,10 +4,17 @@ package com.yany.datastructures.list;
 public class SimpleLinkedList<T> {
 
     private Node<T> root = null;
+    private Node<T> current = null;
+
+    public SimpleLinkedList() {
+        this.root = new Node<>(null, null);
+        this.current = root;
+    }
 
 
     public void add(Node<T> node) {
-
+        current.setNext(node);
+        current = node;
     }
 
     class Node<T> {

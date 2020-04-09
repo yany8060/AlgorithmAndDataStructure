@@ -1,6 +1,8 @@
 package com.yany.datastructures.tree.btree;
 
 /**
+ * https://blog.csdn.net/kalikrick/article/details/27980007
+ *
  * @author yanyong on 2019/9/25
  */
 public class BTree<K extends Comparable<K>> {
@@ -45,8 +47,27 @@ public class BTree<K extends Comparable<K>> {
         }
     }
 
+    public K search(AbstractBTreeNode<K> node, K key) {
+        int i = node.indexOfKey(key);
+        if (i > 0) {
+            return node.getKey(i);
+        }
+        i = 0;
+        while (i < node.nkey() && key.compareTo(node.getKey(i)) > 0) {
+            i++;
+        }
+
+        return null;
+    }
+
     @Override
     public String toString() {
         return AbstractBTreeNode.BTreeToString(this.root);
+    }
+
+    public static void main(String[] args) {
+        System.getSecurityManager();
+
+
     }
 }
