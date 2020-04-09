@@ -54,12 +54,6 @@ public class Heap {
         heapify(a, count, 1);
     }
 
-
-    public void buildHeap(int arr[]) {
-
-    }
-
-
     /**
      * 堆化
      *

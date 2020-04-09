@@ -1,13 +1,21 @@
 package com.yany.algorithms.sort;
 
+import java.util.Arrays;
+
 /**
  * @author yanyong on 2020/3/8
  */
 public class HeapSort {
+    public static void main(String[] args) {
+        int[] nums = {2, 7, 8, 3, 1, 0, 6, 9, 0, 5, 4};
 
-    public static void sort(int[] nums) {
+        sort(nums);
+        System.out.println(Arrays.toString(nums));
+    }
+
+    private static void sort(int[] nums) {
         // 1.构建大顶堆
-        for (int i = nums.length / 2 - 1; i >= 0; i++) {
+        for (int i = nums.length / 2 - 1; i >= 0; i--) {
             //从第一个非叶子结点从下至上，从右至左调整结构
             adjustHeap(nums, i, nums.length);
         }
@@ -20,7 +28,7 @@ public class HeapSort {
         }
     }
 
-    public static void adjustHeap(int[] nums, int i, int length) {
+    private static void adjustHeap(int[] nums, int i, int length) {
         int tmp = nums[i];
 
         // 从i结点的左子结点开始，也就是2i+1处开始
@@ -40,7 +48,7 @@ public class HeapSort {
         nums[i] = tmp;
     }
 
-    public static void swap(int[] nums, int i, int j) {
+    private static void swap(int[] nums, int i, int j) {
         int tmp = nums[i];
         nums[i] = nums[j];
         nums[j] = tmp;
